@@ -1,0 +1,59 @@
+[config.toRPGMakerMV]
+[config.toRPGMakerMV.actor]
+[config.toRPGMakerMV.actor.indent]
+# 発言者名の先頭にインデントを付与する。
+# (Default: false)
+enable = false
+# 先頭に付与するインデント文字数
+# (Default: 2)
+size = 2
+
+[config.toRPGMakerMV.actor.bracket]
+# 発言者の名前の前後を括弧でくくる
+# (Default: true)
+enable = true
+# 括弧でくくる場合の先頭の文字
+# (Default:  "【")
+start = "【"
+# 括弧でくくる場合の最後の文字
+# (Default:  "】")
+end = "】"
+
+[config.toRPGMakerMV.message]
+[config.toRPGMakerMV.message.indent]
+# メッセージの先頭にインデントを付与する。
+# (Default: true)
+enable = true
+# 先頭に付与するインデント文字数
+# (Default: 2)
+size = 2
+
+[config.toRPGMakerMV.message.bracket]
+# メッセージの名前の前後を括弧でくくる
+# (Default: true)
+enable = true
+# 括弧でくくる場合の先頭の文字
+# (Default:  "「")
+start = "「"
+# 括弧でくくる場合の最後の文字
+# (Default:  "」")
+end = "」"
+
+[config.toRPGMakerMV.message.return]
+# メッセージがウィンドウ内に収まりきらない場合に折り返す
+# (Default: true)
+enable = true
+# 折り返す場合の折り返しが有効になる文字数
+# (Default: 54)
+size = 54
+
+# ツクール用に出力する際に置換する
+[config.toRPGMakerMV.replace]
+[[config.toRPGMakerMV.replace.word]]
+before = "ハロルド"
+after = "\\n[1]"
+
+[[config.toRPGMakerMV.replace.word]]
+before = "アルド"
+after = "\\n[2]"
+
