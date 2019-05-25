@@ -2,17 +2,23 @@ const doc = """
 txtconv4mv is a command to convert CSV to RPG Maker MV text data.
 
 Usage:
+  txtconv4mv [options] init
   txtconv4mv [options] config
   txtconv4mv [options] convert <file>
   txtconv4mv (-h | --help)
   txtconv4mv (-v | --version)
 
+Commands:
+  init       Setup application
+  config     Generate converting config
+  convert    Convert text to RPG Maker MV text data
+
 Options:
-  -h --help                 Show this screen
-  -v --version              Show version
-  -X --debug                Debug mode ON
-  -L --lang <language>      Message language [default: ja]
-  -c --config-file <file>   Config file
+  -h --help                  Show this screen
+  -v --version               Show version
+  -X --debug                 Debug mode ON
+  -L --lang <language>       Message language [default: ja]
+  -c --config-file <file>    Config file
 """
 
 import docopt
@@ -31,6 +37,13 @@ type
 
 const
   version = "v1.0.0"
+
+proc execInit(args: Table[string, Value]) =
+  const brackets = @[
+    ["[", "]"],
+    ["(", ")"],
+  ]
+  echo brackets
 
 template printInputPrompt(msg: string, body: untyped) =
   echo msg
@@ -97,6 +110,10 @@ when isMainModule:
     addHandler(logger)
   
   debug "args = ", args
+
+  if args["init"]:
+    execInit(args)
+    quit 0
 
   if args["config"]:
     execConfig(args)
