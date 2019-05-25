@@ -12,6 +12,8 @@ bin           = @["txtconv4mv"]
 # Dependencies
 
 requires "nim >= 0.19.4"
+requires "eastasianwidth >= 1.1.0"
+requires "docopt >= 0.6.8"
 
 import strformat
 
