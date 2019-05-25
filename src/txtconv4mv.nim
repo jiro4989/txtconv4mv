@@ -32,6 +32,18 @@ type
 const
   version = "v1.0.0"
 
+template printInputPrompt(msg: string, body: untyped) =
+  echo msg
+  stdout.write "> "
+  body
+  echo ""
+
+proc setFromYNInput(b: var bool) =
+  case stdin.readLine.toLowerAscii
+  of "y": b = true
+  of "n": b = false
+  else: assert false, "NG TODO"
+
 proc execConfig(args: Table[string, Value]) =
   debug "call `execConfig`, args = ", args
   let
@@ -40,52 +52,39 @@ proc execConfig(args: Table[string, Value]) =
   debug "msg = ", msg
 
   var conf: Config
-  echo msg["start"]
-  echo msg["projectDir"]
-  stdout.write "> "
-  conf.projectDir = stdin.readLine
+  printInputPrompt msg["start"]:
+    discard
 
-  echo msg["wrapWithBrackets"]
-  stdout.write "> "
-  case stdin.readLine.toLowerAscii
-  of "y": conf.wrapWithBrackets = true
-  of "n": conf.wrapWithBrackets = false
-  else: assert false, "NG TODO"
+  printInputPrompt msg["projectDir"]:
+    conf.projectDir = stdin.readLine
+
+  printInputPrompt msg["wrapWithBrackets"]:
+    setFromYNInput conf.wrapWithBrackets
 
   if conf.wrapWithBrackets:
-    echo msg["whatsBrackets"]
-    stdout.write "> "
-    # TODO
+    printInputPrompt msg["whatsBrackets"]:
+      echo ""
+      # TODO
 
-  echo msg["indents"]
-  stdout.write "> "
-  case stdin.readLine.toLowerAscii
-  of "y": conf.indents = true
-  of "n": conf.indents = false
-  else: assert false, "NG TODO"
+  printInputPrompt msg["indents"]:
+    setFromYNInput conf.indents
 
-  echo msg["wordWrap"]
-  stdout.write "> "
-  case stdin.readLine.toLowerAscii
-  of "y": conf.wordWrap = true
-  of "n": conf.wordWrap = false
-  else: assert false, "NG TODO"
+  printInputPrompt msg["wordWrap"]:
+    setFromYNInput conf.wordWrap
 
-  echo msg["charCount"]
-  stdout.write "> "
-  conf.charCount = stdin.readLine.parseInt
+  printInputPrompt msg["charCount"]:
+    conf.charCount = stdin.readLine.parseInt
 
-  echo msg["confirmConfig"]
-  stdout.write "> "
-  echo conf
+  printInputPrompt msg["confirmConfig"]:
+    echo conf
 
-  echo msg["finalConfirm"]
-  stdout.write "> "
-  case stdin.readLine.toLowerAscii
-  of "y":
-    echo "Generate"
-  of "n": return
-  else: assert false, "NG TODO"
+  printInputPrompt msg["finalConfirm"]:
+    case stdin.readLine.toLowerAscii
+    of "y":
+      echo "Generate"
+    of "n":
+      echo "Not generate"
+    else: assert false, "NG TODO"
 
 proc execConvert(args: Table[string, Value]) =
   debug "call `execConvert`, args = ", args
