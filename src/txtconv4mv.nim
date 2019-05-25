@@ -8,15 +8,26 @@ Usage:
   txtconv4mv (-v | --version)
 
 Options:
-  -h --help              Show this screen
-  -v --version           Show version
-  -X --debug             Debug mode ON
-  -L --lang <language>   Message language [default: ja]
+  -h --help                 Show this screen
+  -v --version              Show version
+  -X --debug                Debug mode ON
+  -L --lang <language>      Message language [default: ja]
+  -c --config-file <file>   Config file
 """
 
 import docopt
 import txtconv4mv/[message]
 import logging
+from strutils import toLowerAscii, parseInt
+
+type
+  Config* = object
+    projectDir*: string
+    wrapWithBrackets*: bool
+    whatsBrackets*: array[2, string]
+    indents*: bool
+    wordWrap*: bool
+    charCount*: int
 
 const
   version = "v1.0.0"
@@ -27,7 +38,54 @@ proc execConfig(args: Table[string, Value]) =
     lang = $args["--lang"]
     msg = message[lang]
   debug "msg = ", msg
+
+  var conf: Config
   echo msg["start"]
+  echo msg["projectDir"]
+  stdout.write "> "
+  conf.projectDir = stdin.readLine
+
+  echo msg["wrapWithBrackets"]
+  stdout.write "> "
+  case stdin.readLine.toLowerAscii
+  of "y": conf.wrapWithBrackets = true
+  of "n": conf.wrapWithBrackets = false
+  else: assert false, "NG TODO"
+
+  if conf.wrapWithBrackets:
+    echo msg["whatsBrackets"]
+    stdout.write "> "
+    # TODO
+
+  echo msg["indents"]
+  stdout.write "> "
+  case stdin.readLine.toLowerAscii
+  of "y": conf.indents = true
+  of "n": conf.indents = false
+  else: assert false, "NG TODO"
+
+  echo msg["wordWrap"]
+  stdout.write "> "
+  case stdin.readLine.toLowerAscii
+  of "y": conf.wordWrap = true
+  of "n": conf.wordWrap = false
+  else: assert false, "NG TODO"
+
+  echo msg["charCount"]
+  stdout.write "> "
+  conf.charCount = stdin.readLine.parseInt
+
+  echo msg["confirmConfig"]
+  stdout.write "> "
+  echo conf
+
+  echo msg["finalConfirm"]
+  stdout.write "> "
+  case stdin.readLine.toLowerAscii
+  of "y":
+    echo "Generate"
+  of "n": return
+  else: assert false, "NG TODO"
 
 proc execConvert(args: Table[string, Value]) =
   debug "call `execConvert`, args = ", args
