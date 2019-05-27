@@ -26,11 +26,11 @@ when false:
   world
   goodby"""
 
-  var msgs = readCSV("data.csv")
-  texts = msgs.format(indent = true, wrapWord = -1)
+  var msgs = readCSV("data.csv") # [{actor, 0, 0, [helo, world]}]
+  msgs.text = msgs.format(indent = true, wrapWord = -1)
 
   var mapData = newMapData()
-  mapData.add texts
+  mapData.add msgs
 
   var project = readProject("$HOME/document/game/Project1")
   project.add mapData
