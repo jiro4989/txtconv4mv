@@ -1,0 +1,19 @@
+= memo
+
+RPGツクールMVのデータ構造について覚書
+
+== Map001.json
+
+events[].x
+events[].y
+events[].pages[].list
+    code:101 actor name 0 0
+    code:401 message (1line)
+    code:401 message (1line)
+    code:401 message (1line)
+    code:101 actor name 0 0
+    code:401 message (1line)
+    code:401 message (1line)
+    code:0 (eventの最後)
+
+== Mapinfos.json
