@@ -1,7 +1,7 @@
 import unittest
 import json, tables
 
-import txtconv4mv/rpgmakertype
+import txtconv4mv/gamemap
 
 proc toUgly*(result: var string, node: JsonNode) =
   ## Converts `node` to its JSON Representation, without
@@ -115,5 +115,13 @@ suite "JSON":
 
 suite "ReadJson":
   test "sample":
-    var data = parseFile("examples/Map001.json").to(MapData)
+    var data = parseFile("examples/Map002.json").to(MapData)
     echo data
+    for e in data.events:
+      if not e.isNil:
+        echo e[]
+        for p in e[].pages:
+          if not p.isNil:
+            for l in p[].list:
+              if not l.isNil:
+                echo l[].parameters

@@ -1,3 +1,6 @@
+import textevent
+import json
+
 type
   BGM* = ref object
     name*: string
@@ -32,10 +35,10 @@ type
   EventsListData* = ref object
     code*: int
     indent*: int
-    parameters*: seq[RootObj]
+    parameters*: seq[JsonNode]
   MoveRouteListData* = ref object
     code*: int
-    parameters*: seq[RootObj]
+    parameters*: seq[JsonNode]
   MoveRoute* = ref object
     list*: seq[MoveRouteListData]
     repeat*: bool
@@ -71,7 +74,7 @@ type
     bgs*: BGS
     disableDashing*: bool
     displayName*: string
-    encounterList*: seq[RootObj]
+    encounterList*: seq[JsonNode]
     encounterStep*: int
     height*: int
     note*: string
@@ -87,3 +90,54 @@ type
     width*: int
     data*: seq[int]
     events*: seq[Event]
+
+const
+  texeEventMetaCode* = 101
+  texeEventCode* = 401
+
+proc newMapData*(): MapData =
+  discard
+
+proc toBackgroundCode(s: string): int =
+  ## TODO
+  0
+
+proc toPositionCode(s: string): int =
+  ## TODO
+  0
+
+proc newEventsListDatas*(textEvent: TextEvent): seq[EventsListData] =
+  var metaEv = new EventsListData
+  metaEv.code = texeEventMetaCode
+  metaEv.indent = 0
+
+  var image = new JsonNode
+  image.kind = JString
+  image.str = textEvent.image
+  metaEv.parameters.add image
+
+  var background = new JsonNode
+  image.kind = JInt
+  image.num = textEvent.background.toBackgroundCode
+  metaEv.parameters.add background
+
+  var position = new JsonNode
+  image.kind = JInt
+  image.num = textEvent.position.toPositionCode
+  metaEv.parameters.add position
+
+  result.add metaEv
+
+  for line in textEvent.text:
+    var param = new JsonNode
+    param.kind = JString
+    param.str = line
+
+    var ev = new EventsListData
+    ev.code = texeEventCode
+    ev.indent = 0
+    ev.parameters.add param
+    result.add ev
+
+proc add*(self: var MapData, textEvent: TextEvent) =
+  self.events[1].pages[0].list.add newEventsListDatas(textEvent)

@@ -22,7 +22,7 @@ Options:
 """
 
 import docopt
-import txtconv4mv/[message, rpgmakertype]
+import txtconv4mv/[message, gamemap]
 import logging
 from strutils import toLowerAscii, parseInt
 
