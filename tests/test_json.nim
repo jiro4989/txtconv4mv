@@ -116,7 +116,9 @@ suite "JSON":
 suite "ReadJson":
   test "sample":
     var data = parseFile("examples/Map002.json").to(MapData)
-    echo data
+    echo "data:", data
+    echo "bgm:", data.bgm[]
+    echo "bgs:", data.bgs[]
     for e in data.events:
       if not e.isNil:
         echo e[]
