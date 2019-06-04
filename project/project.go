@@ -1,6 +1,7 @@
 package project
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"regexp"
 
@@ -27,6 +28,18 @@ func GetBiggestMapIndex(dataDir string) (int, error) {
 	return matchedCount, nil
 }
 
+func ReadDataMapInfosFile(fn string) (DataMapInfos, error) {
+	data, err := ioutil.ReadFile(fn)
+
+	var mi DataMapInfos
+	err = json.Unmarshal(data, &mi)
+	return mi, err
+}
+
 func WriteMapJSONFile(fn string, ss sentence.Sentences, conf config.Config) error {
+	return nil
+}
+
+func WriteMapInfosFile(fn string, mi DataMapInfos) error {
 	return nil
 }

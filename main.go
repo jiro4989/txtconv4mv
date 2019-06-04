@@ -42,17 +42,34 @@ func convert(sentences sentence.Sentences, conf config.Config) error {
 	if err != nil {
 		return err
 	}
+	mapIndex++ // 次に生成するファイル名のインデクスは1加算されていないといけない
 	// ファイルの生成
 	mapFileName := fmt.Sprintf(dataDir+"/Map%03d.json", mapIndex)
 	if err := project.WriteMapJSONFile(mapFileName, sentences, conf); err != nil {
 		return err
 	}
 
-	// // MapInfo.jsonの更新
-	// mapInfoFileName := config.ProjectRoot + "/data/MapInfo.json"
-	// if err := addMapInfoJSONFile(mapInfoFileName, mapFileName); err != nil {
-	// 	return err
-	// }
+	// 更新するMapInfos.jsonの取得
+	mapInfoFileName := dataDir + "/MapInfo.json"
+	dataMapInfos, err := project.ReadDataMapInfosFile(mapInfoFileName)
+	if err != nil {
+		return err
+	}
+
+	// MapInfos.jsonの更新
+	m := project.DataMapInfo{
+		ID:       mapIndex,
+		Expanded: false,
+		Name:     "txtconv4mv",
+		Order:    mapIndex, // TODO ???
+		ParentID: 1,        // TODO ???
+		ScrollX:  300.5,    // TODO
+		ScrollY:  300.5,    // TODO
+	}
+	dataMapInfos.Add(&m)
+	if err := project.WriteMapInfosFile(mapInfoFileName, dataMapInfos); err != nil {
+		return err
+	}
 
 	return nil
 }
