@@ -18,6 +18,27 @@ Excelとかで作ったCSVファイルをRPGツクールMVのテキストデー�
 * ツクールのプロジェクトを指定する
 * ツクールを起動する
 
+=== コマンドライン
+
+[source,bash]
+----
+$ txtconv4mv config init
+# ツクールのプロジェクトディレクトリとかもろもろをここで設定
+
+$ ls config/
+Game1.json
+# プロジェクトの名前が設定ファイルの名前になる
+
+$ txtconv4mv convert config/Game1.json
+# プロジェクトに変換されたデータが追加される
+
+$ ls $HOME/Documents/Game/Game1/data/Map*.json
+Map001.json MapInfo.json
+
+$ ls backup/yyyy-mm-dd
+Map001.json MapInfo.json
+----
+
 == できること
 
 * CSVをツクールMVのデータに変換

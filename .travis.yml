@@ -1,48 +1,23 @@
-sudo: false
-
-language: c
-
-os:
-  - linux
-  - osx
+language: go
 
 env:
-  - PATH=$HOME/.nimble/bin:$PATH
-    APP_NAME=txtconv4mv
-
-addons:
-  apt:
-    packages:
-      - libcurl4-openssl-dev
-      - libsdl1.2-dev
-      - libgc-dev
-      - libsfml-dev
-
-before_install:
-  - curl https://nim-lang.org/choosenim/init.sh -sSf -o init.sh
-  - bash init.sh -y
+  global:
+    - GO111MODULE=on
+    - TEXTIMG_EMOJI_DIR=/tmp/noto-emoji/png/128
+    - TEXTIMG_FONT_FILE=/usr/share/fonts/TTF/HackGen-Regular.ttf
 
 before_script:
-  - set -e
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then unset -f cd; fi
-  - echo PATH:${PATH}
-  - set +e
+  - sudo install -d -o $USER -g $USER -m 0777 /images
+  - go build
+  - git clone https://github.com/googlefonts/noto-emoji /tmp/noto-emoji
 
 script:
-  - set -e
-  - nimble ci
-  - set +e
+  - go build
+  - go test -cover ./...
+  - ./tester.sh
+  - ./textimg "t.png" -s
+  - ./textimg "t.gif" -sa
 
-before_deploy:
-  - mkdir -p dist/${APP_NAME}_${TRAVIS_OS_NAME}
-  - cp -rf LICENSE README* bin dist/${APP_NAME}_${TRAVIS_OS_NAME}/
-  - tar -C dist -czf ${APP_NAME}_${TRAVIS_OS_NAME}{.tar.gz,}
-
-deploy:
-  provider: releases
-  api_key: "$GITHUB_OAUTH_TOKEN"
-  keep-history: false
-  skip_cleanup: true
-  file: ${APP_NAME}_${TRAVIS_OS_NAME}.tar.gz
-  on:
-    tags: true
+after_script:
+  - [ -e /images/t.png ]
+  - [ -e /images/t.gif ]
