@@ -3,6 +3,7 @@ package project
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/jiro4989/txtconv4mv/config"
@@ -37,7 +38,12 @@ func ReadDataMapInfosFile(fn string) (DataMapInfos, error) {
 }
 
 func WriteMapJSONFile(fn string, ss sentence.Sentences, conf config.Config) error {
-	return nil
+	data := DataMap{}
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(fn, b, os.ModePerm)
 }
 
 func WriteMapInfosFile(fn string, mi DataMapInfos) error {
