@@ -12,19 +12,15 @@ EXTERNAL_TOOLS := \
 	github.com/mitchellh/gox \
 	github.com/tcnksm/ghr \
 	github.com/motemen/gobump/cmd/gobump
-BINS := flat rep codepoint
 
 help: ## ドキュメントのヘルプを表示する。
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: $(SRCS) ## ビルド
-	for bin in $(BINS); do \
-		go build $(LDFLAGS) -o bin/$$bin ./cmd/$$bin/main.go; \
-		go build $(LDFLAGS) -o bin/$$bin ./cmd/$$bin/main.go; \
-	done
+	go build $(LDFLAGS) -o bin/$(APPNAME) .
 
 install: build ## インストール
-	go install ./cmd/...
+	go install
 
 xbuild: $(SRCS) bootstrap ## クロスコンパイル
 	gox $(LDFLAGS) $(XBUILD_TARGETS) --output "$(DIST_DIR)/{{.Dir}}_{{.OS}}_{{.Arch}}/{{.Dir}}"
@@ -51,6 +47,7 @@ lint: ## 静的解析をかける
 
 test: ## テストコードを実行する
 	go test -cover ./...
+	./tester.sh
 
 clean: ## バイナリ、配布物ディレクトリを削除する
 	-rm -rf bin
