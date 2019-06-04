@@ -1,5 +1,7 @@
 = txtconv4mv
 
+image:https://travis-ci.org/jiro4989/txtconv4mv.svg?branch=master["Build Status", link="https://travis-ci.org/jiro4989/txtconv4mv"]
+
 Excelとかで作ったCSVファイルをRPGツクールMVのテキストデータに変換するツール。
 
 == 目指すところ
