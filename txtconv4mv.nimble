@@ -8,7 +8,7 @@ srcDir        = "src"
 bin           = @["txtconv4mv"]
 binDir        = "bin"
 
-
+import strformat
 
 # Dependencies
 
@@ -19,3 +19,6 @@ requires "argparse >= 0.7.1"
 task ci, "Run CI":
   exec "nimble test -Y"
   exec "nimble build -Y"
+  let appName = bin[0]
+  exec &"./bin/{appName} -h"
+  exec &"./bin/{appName} -v"
