@@ -15,4 +15,5 @@ binDir        = "bin"
 requires "nim >= 0.20.0"
 
 task ci, "Run CI":
-  discard
+  exec "nimble test"
+  exec "nimble build"
