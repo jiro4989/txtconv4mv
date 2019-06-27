@@ -77,25 +77,6 @@ template cmdGenerate(opts: untyped) =
       n = align($index, 3, '0')
       mapFile = dir / "Map" & n & ".json"
     return mapFile
-  
-  proc addMapInfo(self: var MapInfos, mi: MapInfo) =
-    # 先頭のは常にnullなので
-    if 1 < self.filterIt(it.isNil).len:
-      var nilCount: int
-      # 途中にnullが存在したらその位置を上書きする
-      # idはnullの位置と同じ
-      for elem in self:
-        if elem.isNil:
-          inc(nilCount)
-        if 1 < nilCount:
-          mi.id = nilCount
-          self[mi.id] = mi
-          return
-    # 途中にnullが存在しないときは末尾に追加
-    # idは一番大きいIDの次の値
-    let id = self.filterIt(not it.isNil).mapIt(it.id).max + 1
-    mi.id = id
-    self.add(mi)
 
   let
     config = parseFile(opts.configFile).to(GenerateConfig)
@@ -115,10 +96,7 @@ template cmdGenerate(opts: untyped) =
     writeFile(mapFilePath, obj.pretty)
 
     # MapInfos.jsonを更新する
-    let order = mapInfos.filterIt(not it.isNil).mapIt(it.order).max + 1
-    var mi = MapInfo(id: -1, expanded: false, name: "txtconv4mv", order: order,
-                     parentId: 0, scrollX: 0.0, scrollY: 0.0)
-    mapInfos.addMapInfo(mi)
+    mapInfos.addMapInfo
   writeFile(mapInfosPath, mapInfos.mapIt(it[]).`$$`.parseJson.pretty)
 
 proc main(params: seq[string]) =
