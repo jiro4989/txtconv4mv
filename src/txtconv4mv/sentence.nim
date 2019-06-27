@@ -79,6 +79,11 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
   let indentWidth = textBrackets[0].stringWidth
   var wraped = sentence.text.wrapEAW(wrapWidth - indentWidth, useJoin)
   if 0 < indentWidth:
-    wraped = (textBrackets[0] & wraped[0]) & wraped[1..^1].mapIt(" ".repeat(indentWidth) & it)
+    proc genI(w: int): string = " ".repeat(w)
+    wraped = (textBrackets[0] & wraped[0]) & wraped[1..^1].mapIt(genI(indentWidth) & it)
     wraped[^1].add(textBrackets[1])
+    if wrapWidth < wraped[^1].stringWidth:
+      let w = wraped[^1].wrapEAW1Line(wrapWidth)
+      wraped[^1] = w[0]
+      wraped.add(genI(indentWidth) & w[1])
   result.add(wraped)
