@@ -14,6 +14,7 @@ binDir        = "bin"
 
 requires "nim >= 0.20.0"
 requires "eastasianwidth >= 1.1.0"
+requires "argparse >= 0.7.1"
 
 task ci, "Run CI":
   exec "nimble test -Y"

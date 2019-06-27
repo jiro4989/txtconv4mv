@@ -1,6 +1,17 @@
 import sentence
 import json, os
 
+type
+  MapInfos = seq[MapInfo]
+  MapInfo = ref object
+    id: int64
+    expanded: bool
+    name: string
+    order: int64
+    parentId: int64
+    scrollX: float64
+    scrollY: float64
+
 proc newMapObj: JsonNode =
   result = %* {
       "autoplayBgm": false,
@@ -134,17 +145,6 @@ proc newMapObj: JsonNode =
           }
       ]
   }
-
-type
-  MapInfos = seq[MapInfo]
-  MapInfo = ref object
-    id: int64
-    expanded: bool
-    name: string
-    order: int64
-    parentId: int64
-    scrollX: float64
-    scrollY: float64
 
 proc readMapInfos(f: string): MapInfos =
   parseFile(f).to(MapInfos)
