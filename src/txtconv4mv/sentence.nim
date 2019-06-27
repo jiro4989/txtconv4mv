@@ -45,6 +45,7 @@ proc wrapEAW(s: string, width: int, useJoin: bool): seq[string] =
     if useJoin:
       if 2 <= wrapped.len:
         result.add(wrapped[0..^2])
+        # 折り返しで発生した最後の行を次の折り返しの先頭に追加するため
         lastLine = wrapped[^1]
       else:
         result.add(wrapped)
@@ -76,12 +77,20 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
   if sentence.actorName != "":
     let actor = actorNameBrackets[0] & sentence.actorName & actorNameBrackets[1]
     result.add(actor)
+
+  # テキスト全体を括弧でくくるときは、先頭の括弧の高さに全てのテキストを合わせる
+  # よって、追加するインデント分折り返しの長さを引いてからwrapする
   let indentWidth = textBrackets[0].stringWidth
   var wraped = sentence.text.wrapEAW(wrapWidth - indentWidth, useJoin)
+
+  # 括弧によるインデント追加
   if 0 < indentWidth:
     proc genI(w: int): string = " ".repeat(w)
+    # 先頭に括弧を追加し、先頭以外の行の行頭にインデントを追加
     wraped = (textBrackets[0] & wraped[0]) & wraped[1..^1].mapIt(genI(indentWidth) & it)
+    # 最後の行の行末に括弧とじを追加
     wraped[^1].add(textBrackets[1])
+    # 括弧とじを追加したことで折り返し幅を超えているときのための修正
     if wrapWidth < wraped[^1].stringWidth:
       let w = wraped[^1].wrapEAW1Line(wrapWidth)
       wraped[^1] = w[0]
