@@ -1,8 +1,7 @@
 import eastasianwidth
 
-import parsecsv
+import strutils, unicode, parsecsv
 from sequtils import mapIt
-import strutils, unicode
 
 type
   Sentence* = ref SentenceObj
