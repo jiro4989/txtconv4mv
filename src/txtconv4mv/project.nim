@@ -146,7 +146,7 @@ proc newMapObj: JsonNode =
       ]
   }
 
-proc readMapInfos(f: string): MapInfos =
+proc readMapInfos*(f: string): MapInfos =
   parseFile(f).to(MapInfos)
 
 proc getBiggestMapIndex*(dir: string): int =

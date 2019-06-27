@@ -67,9 +67,12 @@ template cmdConfig(opts: untyped) =
 
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
-  let configFile = opts.configFile
-  let config = parseFile(opts.configFile).to(GenerateConfig)
+  let
+    config = parseFile(opts.configFile).to(GenerateConfig)
+    dataDir = config.projectDir / "data"
+    mapInfos = readMapInfos(dataDir / "MapInfos.json")
   for f in opts.args:
+    # MapXXX.jsonを生成する
     let
       # 文章ファイルからデータ取得
       ss = readSentenceFile(f)
@@ -78,11 +81,13 @@ template cmdGenerate(opts: untyped) =
                          config.useJoin, config.textBrackets)
       # MapXXX.jsonのファイルパスを生成
       # 一番大きい数値を取得し、1加算する
-      dataDir = config.projectDir / "data"
       index = getBiggestMapIndex(dataDir) + 1
       n = align($index, 3, '0')
       mapFile = dataDir / "Map" & n & ".json"
     writeFile(mapFile, obj.pretty)
+
+    # MapInfos.jsonを更新する
+    # TODO mapInfos.add()
 
 proc main(params: seq[string]) =
   var p = newParser(appName):
