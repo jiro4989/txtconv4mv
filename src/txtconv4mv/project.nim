@@ -1,6 +1,3 @@
-import sentence
-import strformat
-
 type
   DataMap = ref object
     autoplayBgm: bool
@@ -101,25 +98,3 @@ type
     parentId: int64
     scrollX: float64
     scrollY: float64
-
-proc toPageList*(sentences: Sentences, actorNameBrackets: array[2, string],
-                 wrapWidth: int, useJoin: bool, textBrackets: array[2, string],
-                 indentBracketsWidth: bool): seq[PageListElem] =
-  ## * ``actorNameBrackets`` はアクター名を囲う括弧。
-  ## * ``wrapWidth`` が0以下のとき、折り返しを実行しない。
-  ## * ``useJoin`` がtrueのとき、文字列を折り返したときに次の行を同じ行に連結す
-  ##   る。
-  ## * ``textBrackets`` はセリフの前後を囲う括弧。
-  ## * ``indentBracketsWidth`` は ``brackets`` の高さにテキストの高さを揃えるか
-  ##   否か。
-  # events[].pages[].list
-  #     code:101 actor name 0 0
-  #     code:401 message (1line)
-  #     code:401 message (1line)
-  #     code:401 message (1line)
-  #     code:101 actor name 0 0
-  #     code:401 message (1line)
-  #     code:401 message (1line)
-  #     code:0 (eventの最後)
-  for sentence in sentences:
-    let actor = &"{actorNameBrackets[0]}{sentence.actorName}{actorNameBrackets[1]}"
