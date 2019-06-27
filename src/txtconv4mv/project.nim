@@ -149,7 +149,7 @@ proc newMapObj: JsonNode =
 proc readMapInfos(f: string): MapInfos =
   parseFile(f).to(MapInfos)
 
-proc getBiggestMapIndex(dir: string): int =
+proc getBiggestMapIndex*(dir: string): int =
   for f in walkFiles(dir / "Map*.json"):
     if f.lastPathPart != "MapInfos.json":
       inc(result)

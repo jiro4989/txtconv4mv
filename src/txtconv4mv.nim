@@ -4,7 +4,15 @@
 import argparse
 import txtconv4mv/[sentence, project, msgs]
 import json, os, logging, rdstdin, tables, terminal
-from strutils import toLower, repeat
+from strutils import toLower, repeat, align
+
+type
+  GenerateConfig = ref object
+    projectDir: string
+    actorNameBrackets: array[2, string]
+    wrapWidth: int
+    useJoin: bool
+    textBrackets: array[2, string]
 
 const
   appName = "txtconv4mv"
@@ -59,10 +67,22 @@ template cmdConfig(opts: untyped) =
 
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
-  echo("Hello, World!")
-  let ss = readSentenceFile("examples/text1.csv")
-  let obj = newMapObject(ss, ["<<", ">>"], 80, true, ["「"," 」"])
-  writeFile("Map001.json", obj.pretty)
+  let configFile = opts.configFile
+  let config = parseFile(opts.configFile).to(GenerateConfig)
+  for f in opts.args:
+    let
+      # 文章ファイルからデータ取得
+      ss = readSentenceFile(f)
+      # MapXXX.jsonのデータを生成
+      obj = newMapObject(ss, config.actorNameBrackets, config.wrapWidth,
+                         config.useJoin, config.textBrackets)
+      # MapXXX.jsonのファイルパスを生成
+      # 一番大きい数値を取得し、1加算する
+      dataDir = config.projectDir / "data"
+      index = getBiggestMapIndex(dataDir) + 1
+      n = align($index, 3, '0')
+      mapFile = dataDir / "Map" & n & ".json"
+    writeFile(mapFile, obj.pretty)
 
 proc main(params: seq[string]) =
   var p = newParser(appName):
@@ -71,12 +91,13 @@ proc main(params: seq[string]) =
       run:
         cmdConfig(opts)
     command("generate"):
+      option("-f", "--config-file", default="config.json", help="Config file")
+      arg("args", nargs = -1)
       run:
         cmdGenerate(opts)
     option("-o", "--output", help="Output to this file")
     flag("-X", "--debug", help="Debug on")
     flag("-v", "--version", help="Print version info")
-    arg("args", nargs = -1)
   
   var opts = p.parse(params)
 
