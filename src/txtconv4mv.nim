@@ -10,6 +10,12 @@ const
   appName = "txtconv4mv"
   version = "v1.0.0"
 
+template cmdConfigInit(opts: untyped) =
+  discard
+
+template cmdConfigUpdate(opts: untyped) =
+  discard
+
 template cmdConfig(opts: untyped) =
   debug "Start cmdConfig"
   const promptStr = "? "
@@ -21,7 +27,7 @@ template cmdConfig(opts: untyped) =
     echo ""
     echo line
 
-  let msg = message["ja"]
+  let msg = message[opts.lang]
   lineMsg(msg["start"], tw)
 
   echo msg["projectDir"]
@@ -60,10 +66,16 @@ template cmdGenerate(opts: untyped) =
 
 proc main(params: seq[string]) =
   var p = newParser(appName):
+    command("config"):
+      option("-l", "--lang", default="ja", help="Message language")
+      run:
+        cmdConfig(opts)
+    command("generate"):
+      run:
+        cmdGenerate(opts)
     option("-o", "--output", help="Output to this file")
     flag("-X", "--debug", help="Debug on")
     flag("-v", "--version", help="Print version info")
-    arg("subcmd")
     arg("args", nargs = -1)
   
   var opts = p.parse(params)
@@ -76,10 +88,7 @@ proc main(params: seq[string]) =
     newConsoleLogger(lvlAll, verboseFmtStr).addHandler()
   
   debug opts
-  case opts.subcmd
-  of "config": cmdConfig(opts)
-  of "generate": cmdGenerate(opts)
-  else: discard
+  p.run(params)
 
 when isMainModule:
   main(commandLineParams())
