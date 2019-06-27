@@ -13,6 +13,7 @@ binDir        = "bin"
 # Dependencies
 
 requires "nim >= 0.20.0"
+requires "eastasianwidth >= 1.1.0"
 
 task ci, "Run CI":
   exec "nimble test"
