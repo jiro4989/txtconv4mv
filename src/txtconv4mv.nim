@@ -1,10 +1,11 @@
-# This is just an example to get you started. A typical binary package
-# uses this file as the main entry point of the application.
-
 import argparse
+
 import txtconv4mv/[sentence, project, msgs]
+
 import json, os, logging, rdstdin, tables, terminal
 from strutils import toLower, repeat, align
+from sequtils import mapIt, filterIt
+from marshal import `$$`
 
 type
   GenerateConfig = ref object
@@ -67,10 +68,41 @@ template cmdConfig(opts: untyped) =
 
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
+
+  proc createMapFilePath(dir: string): string =
+    # MapXXX.jsonのファイルパスを生成
+    # 一番大きい数値を取得し、1加算する
+    let
+      index = getBiggestMapIndex(dir) + 1
+      n = align($index, 3, '0')
+      mapFile = dir / "Map" & n & ".json"
+    return mapFile
+  
+  proc addMapInfo(self: var MapInfos, mi: MapInfo) =
+    # 先頭のは常にnullなので
+    if 1 < self.filterIt(it.isNil).len:
+      var nilCount: int
+      # 途中にnullが存在したらその位置を上書きする
+      # idはnullの位置と同じ
+      for elem in self:
+        if elem.isNil:
+          inc(nilCount)
+        if 1 < nilCount:
+          mi.id = nilCount
+          self[mi.id] = mi
+          return
+    # 途中にnullが存在しないときは末尾に追加
+    # idは一番大きいIDの次の値
+    let id = self.filterIt(not it.isNil).mapIt(it.id).max + 1
+    mi.id = id
+    self.add(mi)
+
   let
     config = parseFile(opts.configFile).to(GenerateConfig)
     dataDir = config.projectDir / "data"
-    mapInfos = readMapInfos(dataDir / "MapInfos.json")
+    mapInfosPath = dataDir / "MapInfos.json"
+  var
+    mapInfos = readMapInfos(mapInfosPath)
   for f in opts.args:
     # MapXXX.jsonを生成する
     let
@@ -79,15 +111,15 @@ template cmdGenerate(opts: untyped) =
       # MapXXX.jsonのデータを生成
       obj = newMapObject(ss, config.actorNameBrackets, config.wrapWidth,
                          config.useJoin, config.textBrackets)
-      # MapXXX.jsonのファイルパスを生成
-      # 一番大きい数値を取得し、1加算する
-      index = getBiggestMapIndex(dataDir) + 1
-      n = align($index, 3, '0')
-      mapFile = dataDir / "Map" & n & ".json"
-    writeFile(mapFile, obj.pretty)
+      mapFilePath = createMapFilePath(dataDir)
+    writeFile(mapFilePath, obj.pretty)
 
     # MapInfos.jsonを更新する
-    # TODO mapInfos.add()
+    let order = mapInfos.filterIt(not it.isNil).mapIt(it.order).max + 1
+    var mi = MapInfo(id: -1, expanded: false, name: "txtconv4mv", order: order,
+                     parentId: 0, scrollX: 0.0, scrollY: 0.0)
+    mapInfos.addMapInfo(mi)
+  writeFile(mapInfosPath, mapInfos.mapIt(it[]).`$$`.parseJson.pretty)
 
 proc main(params: seq[string]) =
   var p = newParser(appName):
