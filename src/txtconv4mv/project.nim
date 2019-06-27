@@ -1,5 +1,5 @@
 import sentence
-import json
+import json, os
 
 var mapTemplate = %* {
     "autoplayBgm": false,
@@ -144,6 +144,14 @@ type
     parentId: int64
     scrollX: float64
     scrollY: float64
+
+proc readMapInfos(f: string): MapInfos =
+  parseFile(f).to(MapInfos)
+
+proc getBiggestMapIndex(dir: string): int =
+  for f in walkFiles(dir / "Map*.json"):
+    if f.lastPathPart != "MapInfos.json":
+      inc(result)
 
 template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
   result = newJObject()
