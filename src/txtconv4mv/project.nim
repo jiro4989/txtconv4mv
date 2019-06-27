@@ -239,7 +239,6 @@ template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
   result = newJObject()
   result.add("code", newJInt(code))
   result.add("indent", newJInt(indent))
-  var parameters = newJArray()
   paramsBody
   result.add("parameters", parameters)
 
@@ -249,21 +248,12 @@ proc newSentenceEventMetaPrefix(): JsonNode =
   #   "indent": 0,
   #   "parameters": ["", 0, 0, 2]
   # }
-  # newEventTmpl 101, 0:
-  #   parameters.add(newJString(""))
-  #   parameters.add(newJInt(0)) # TODO
-  #   parameters.add(newJInt(0)) # TODO
-  #   parameters.add(newJInt(2)) # TODO
-
-  result = newJObject()
-  result.add("code", newJInt(101))
-  result.add("indent", newJInt(0))
-  var arr = newJArray()
-  arr.add(newJString(""))
-  arr.add(newJInt(0)) # TODO
-  arr.add(newJInt(0)) # TODO
-  arr.add(newJInt(2)) # TODO
-  result.add("parameters", arr)
+  newEventTmpl 101, 0:
+    var parameters = newJArray()
+    parameters.add(newJString(""))
+    parameters.add(newJInt(0)) # TODO
+    parameters.add(newJInt(0)) # TODO
+    parameters.add(newJInt(2)) # TODO
 
 proc newSentenceEventBody(line: string): JsonNode =
   # {
@@ -271,12 +261,9 @@ proc newSentenceEventBody(line: string): JsonNode =
   #   "indent": 0,
   #   "parameters": ["1"]
   # }
-  result = newJObject()
-  result.add("code", newJInt(401))
-  result.add("indent", newJInt(0))
-  var arr = newJArray()
-  arr.add(newJString(line))
-  result.add("parameters", arr)
+  newEventTmpl 401, 0:
+    var parameters = newJArray()
+    parameters.add(newJString(line))
 
 proc newSentenceEventMetaSuffix(): JsonNode =
   # {
@@ -284,10 +271,8 @@ proc newSentenceEventMetaSuffix(): JsonNode =
   #   "indent": 0,
   #   "parameters": []
   # }
-  result = newJObject()
-  result.add("code", newJInt(0))
-  result.add("indent", newJInt(0))
-  result.add("parameters", newJArray())
+  newEventTmpl 0, 0:
+    var parameters = newJArray()
 
 proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
                      wrapWidth: int, useJoin: bool, textBrackets: array[2, string]): JsonNode =
