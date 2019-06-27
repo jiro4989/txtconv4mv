@@ -205,3 +205,5 @@ proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
     list.add(newSentenceEventMetaSuffix())
   result = newMapObj()
   result["events"][1]["pages"][0]["list"] = list
+
+proc `$`*(self: MapInfo): string = $self[]
