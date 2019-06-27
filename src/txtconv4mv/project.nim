@@ -276,13 +276,13 @@ proc newSentenceEventMetaSuffix(): JsonNode =
 
 proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
                      wrapWidth: int, useJoin: bool, textBrackets: array[2, string]): JsonNode =
+  var list = newJArray()
   for sentence in sentences:
     let texts = sentence.format(actorNameBrackets, wrapWidth, useJoin, textBrackets)
-    var list = newJArray()
     for i, line in texts:
       if i mod 4 == 0:
         list.add(newSentenceEventMetaPrefix())
       list.add(newSentenceEventBody(line))
     list.add(newSentenceEventMetaSuffix())
-    mapTemplate["events"][1]["pages"][1]["list"] = list
-    echo mapTemplate
+  mapTemplate["events"][1]["pages"][0]["list"] = list
+  return mapTemplate
