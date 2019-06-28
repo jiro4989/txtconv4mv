@@ -117,31 +117,27 @@ template cmdGenerate(opts: untyped) =
 
 proc main(params: seq[string]) =
   var p = newParser(appName):
+    option("-o", "--output", help="Output to this file")
     command("config"):
+      flag("-X", "--debug", help="Debug on")
+      flag("-v", "--version", help="Print version info")
       option("-l", "--lang", default="ja", help="Message language")
       flag("-I", "--no-interactive", help="No interactive mode")
-      arg("cmd")
+      arg("cmd") # TODO これのせい
       run:
+        if opts.version:
+          echo version
+          return
+        if opts.debug:
+          newConsoleLogger(lvlAll, verboseFmtStr).addHandler()
         cmdConfig(opts)
     command("generate"):
       option("-f", "--config-file", default="config.json", help="Config file")
       arg("args", nargs = -1)
       run:
         cmdGenerate(opts)
-    option("-o", "--output", help="Output to this file")
-    flag("-X", "--debug", help="Debug on")
-    flag("-v", "--version", help="Print version info")
   
   var opts = p.parse(params)
-
-  if opts.version:
-    echo version
-    return
-
-  if opts.debug:
-    newConsoleLogger(lvlAll, verboseFmtStr).addHandler()
-  
-  debug opts
   p.run(params)
 
 when isMainModule:
