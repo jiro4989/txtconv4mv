@@ -14,6 +14,7 @@ type
     scrollY*: float64
 
 proc newMapObj: JsonNode =
+  ## Map.jsonの雛形データを返す。
   result = %* {
       "autoplayBgm": false,
       "autoplayBgs": false,
@@ -152,6 +153,8 @@ proc readMapInfos*(f: string): MapInfos =
   parseFile(f).to(MapInfos)
 
 template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
+  ## Map.jsonのListの部分のデータを構造を一部作って返す。
+  ## parametersの部分だけはparamsBodyで構築する。
   result = newJObject()
   result.add("code", newJInt(code))
   result.add("indent", newJInt(indent))
@@ -159,6 +162,7 @@ template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
   result.add("parameters", parameters)
 
 proc newSentenceEventMetaPrefix(): JsonNode =
+  ## 文章の開始を示すメタデータを生成する。
   # {
   #   "code": 101,
   #   "indent": 0,
@@ -172,6 +176,8 @@ proc newSentenceEventMetaPrefix(): JsonNode =
     parameters.add(newJInt(2)) # TODO
 
 proc newSentenceEventBody(line: string): JsonNode =
+  ## 文章のデータを生成する。
+  ## 文章は１行の文字列でないといけない。
   # {
   #   "code": 401,
   #   "indent": 0,
@@ -182,6 +188,7 @@ proc newSentenceEventBody(line: string): JsonNode =
     parameters.add(newJString(line))
 
 proc newSentenceEventMetaSuffix(): JsonNode =
+  ## イベントの最後を示すメタデータを返す。
   # {
   #   "code": 0,
   #   "indent": 0,
@@ -192,6 +199,7 @@ proc newSentenceEventMetaSuffix(): JsonNode =
 
 proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
                      wrapWidth: int, useJoin: bool, textBrackets: array[2, string]): JsonNode =
+  ## MapXXX.jsonのデータを生成する。
   var list = newJArray()
   for sentence in sentences:
     let texts = sentence.format(actorNameBrackets, wrapWidth, useJoin, textBrackets)
@@ -204,6 +212,7 @@ proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
   result["events"][1]["pages"][0]["list"] = list
 
 proc getAddableId*(self: MapInfos): int =
+  ## MapInfosのうち、次にデータを追加する位置IDを返す。
   if 1 < self.filterIt(it.isNil).len:
     for i, elem in self:
       if elem.isNil and 0 < i:
@@ -211,6 +220,8 @@ proc getAddableId*(self: MapInfos): int =
   return self.len
 
 proc addMapInfo*(self: var MapInfos) =
+  ## ``self`` にMapInfoを追加する。
+  ## MapInfoが実際にdataディレクトリに存在しなくても追加してしまう。
   let order = self.filterIt(not it.isNil).mapIt(it.order).max + 1
   let id = getAddableId(self)
   var mi = MapInfo(id: id, expanded: false, name: "txtconv4mv", order: order,

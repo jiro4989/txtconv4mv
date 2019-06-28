@@ -92,6 +92,7 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
       wraped.add(genI(indentWidth) & w[1])
   result.add(wraped)
 
+  # アクター名を4行おきに挟む
   if sentence.actorName != "":
     let
       actor = actorNameBrackets[0] & sentence.actorName & actorNameBrackets[1]
