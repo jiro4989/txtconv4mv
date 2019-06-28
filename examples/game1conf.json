@@ -1,0 +1,7 @@
+{
+    "projectDir": "/tmp",
+    "actorNameBrackets": ["【", "】"],
+    "wrapWidth": 72,
+    "useJoin": true,
+    "textBrackets": ["「", "」"]
+}
