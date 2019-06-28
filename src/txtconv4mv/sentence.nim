@@ -55,8 +55,8 @@ proc wrapEAW(s: string, width: int, useJoin: bool): seq[string] =
     result.add(lastLine)
 
 proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
-                     wrapWidth: int, useJoin: bool, textBrackets: array[2, string]
-                     ): seq[string] =
+             wrapWidth: int, useJoin: bool, textBrackets: array[2, string]
+             ): seq[string] =
   ## * ``actorNameBrackets`` はアクター名を囲う括弧。
   ## * ``wrapWidth`` が0以下のとき、折り返しを実行しない。
   ## * ``useJoin`` がtrueのとき、文字列を折り返したときに次の行を同じ行に連結す

@@ -225,7 +225,7 @@ proc addMapInfo*(self: var MapInfos) =
   let order = self.filterIt(not it.isNil).mapIt(it.order).max + 1
   let id = getAddableId(self)
   var mi = MapInfo(id: id, expanded: false, name: "txtconv4mv", order: order,
-                    parentId: 0, scrollX: 0.0, scrollY: 0.0)
+                   parentId: 0, scrollX: 0.0, scrollY: 0.0)
   # 先頭のは常にnullなので
   if 1 < self.filterIt(it.isNil).len:
     # 途中にnullが存在したらその位置を上書きする
