@@ -1,4 +1,5 @@
 import unittest
+import marshal
 
 include txtconv4mv/project
 
@@ -11,8 +12,11 @@ suite "proc getBiggestMapIndex":
     echo getBiggestMapIndex("examples")
 
 suite "proc newMapObject":
+  setup:
+    var ss = Sentences(@[Sentence(actorName: "test", text: "123456")])
   test "Normal":
-    echo newMapObject(Sentences(@[Sentence(actorName: "test", text: "123456")]), ["<<", ">>"], 4, true, ["「"," 」"]).pretty
+    let obj = newMapObject(ss, ["<<", ">>"], 4, true, ["「"," 」"]).pretty
+    echo obj
 
 proc mi(id: int): MapInfo = MapInfo(id: id, order: id, name: "txtconv4mv")
 
