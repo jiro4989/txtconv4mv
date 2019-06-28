@@ -75,10 +75,8 @@ template cmdConfig(opts: untyped) =
     return
 
   case opts.cmd
-  of "config":
-    cmdConfigInit(opts)
-  of "update":
-    cmdConfigUpdate(opts)
+  of "init": cmdConfigInit(opts)
+  of "update": cmdConfigUpdate(opts)
 
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
@@ -122,6 +120,7 @@ proc setLogger(use: bool) =
 proc main(params: seq[string]) =
   var p = newParser(appName):
     command("config"):
+      help("Generate config file")
       flag("-X", "--debug", help="Debug on")
       option("-l", "--lang", default="ja", help="Message language")
       flag("-I", "--no-interactive", help="No interactive mode")
@@ -130,6 +129,7 @@ proc main(params: seq[string]) =
         setLogger(opts.debug)
         cmdConfig(opts)
     command("generate"):
+      help("Generate MapXXX.json and MapInfos.json from sentence CSV file")
       flag("-X", "--debug", help="Debug on")
       option("-f", "--config-file", default="config.json", help="Config file")
       arg("args", nargs = -1)
@@ -137,10 +137,9 @@ proc main(params: seq[string]) =
         setLogger(opts.debug)
         cmdGenerate(opts)
     command("version"):
+      help("Print version")
       run:
         echo version
-  
-  var opts = p.parse(params)
   p.run(params)
 
 when isMainModule:
