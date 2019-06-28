@@ -129,6 +129,7 @@ template cmdGenerate(opts: untyped) =
                          config.useJoin, config.textBrackets)
       mapFilePath = createMapFilePath(dataDir, mapInfos.getAddableId)
     writeFile(mapFilePath, obj.pretty)
+    debug "Generated: " & mapFilePath
 
     # MapInfos.jsonを更新する
     mapInfos.addMapInfo
@@ -136,6 +137,7 @@ template cmdGenerate(opts: untyped) =
                             else: $$it[])
                      .join(",\n")
   writeFile(mapInfosPath, "[\n" & data & "\n]")
+  debug "Update: " & mapInfosPath
 
 proc setLogger(use: bool) =
   if use:
