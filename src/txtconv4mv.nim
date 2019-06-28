@@ -20,13 +20,7 @@ const
   version = "v1.0.0"
 
 template cmdConfigInit(opts: untyped) =
-  discard
-
-template cmdConfigUpdate(opts: untyped) =
-  discard
-
-template cmdConfig(opts: untyped) =
-  debug "Start cmdConfig"
+  debug "Start cmdConfigInit"
   const promptStr = "? "
   let tw = "-".repeat(terminalWidth())
   template lineMsg(line: string, body: untyped) =
@@ -63,6 +57,28 @@ template cmdConfig(opts: untyped) =
     echo "Finish"
   else:
     echo "中断"
+
+template cmdConfigUpdate(opts: untyped) =
+  debug "Start cmdConfigInit"
+  discard
+
+template cmdConfig(opts: untyped) =
+  debug "Start cmdConfig"
+  if opts.noInteractive:
+    let data = GenerateConfig(
+      projectDir: """C:\Users\YourName\Documents\Game\Project1""",
+      actorNameBrackets: ["【", "】"],
+      wrapWidth: 72,
+      useJoin: true,
+      textBrackets: ["「", "」"])
+    writeFile("config.json", data[].`$$`.parseJson.pretty)
+    return
+
+  case opts.cmd
+  of "config":
+    cmdConfigInit(opts)
+  of "update":
+    cmdConfigUpdate(opts)
 
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
@@ -104,17 +120,9 @@ proc main(params: seq[string]) =
     command("config"):
       option("-l", "--lang", default="ja", help="Message language")
       flag("-I", "--no-interactive", help="No interactive mode")
+      arg("cmd")
       run:
-        if opts.noInteractive:
-          let data = GenerateConfig(
-            projectDir: """C:\Users\YourName\Documents\Game\Project1""",
-            actorNameBrackets: ["【", "】"],
-            wrapWidth: 72,
-            useJoin: true,
-            textBrackets: ["「", "」"])
-          writeFile("config.json", data[].`$$`.parseJson.pretty)
-        else:
-          cmdConfig(opts)
+        cmdConfig(opts)
     command("generate"):
       option("-f", "--config-file", default="config.json", help="Config file")
       arg("args", nargs = -1)
