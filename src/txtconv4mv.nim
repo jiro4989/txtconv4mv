@@ -29,40 +29,38 @@ template cmdConfig(opts: untyped) =
   debug "Start cmdConfig"
   const promptStr = "? "
   let tw = "-".repeat(terminalWidth())
-  proc lineMsg(msg, line: string) =
+  template lineMsg(line: string, body: untyped) =
     echo line
     echo ""
+    body
+    echo ""
+    echo line
+  
+  proc inputPrompt(msg: string): string =
     echo msg
+    discard readLineFromStdin(promptStr, result)
     echo ""
-    echo line
 
   let msg = message[opts.lang]
-  lineMsg(msg["start"], tw)
+  lineMsg tw:
+    echo msg["start"]
 
-  echo msg["projectDir"]
-  let projDir = readLineFromStdin(promptStr)
+  var conf = new GenerateConfig
+  conf.projectDir = inputPrompt(msg["projectDir"])
+  if inputPrompt(msg["wrapWithBrackets"]).toLower == "y":
+    echo "括弧 TODO"
+  conf.useJoin = inputPrompt(msg["wordWrap"]).toLower == "y"
+  conf.wrapWidth = inputPrompt(msg["width"]).parseInt
 
-  echo msg["wrapWithBrackets"]
-  let useWrap = readLineFromStdin(promptStr)
-
-  if useWrap.toLower == "y":
-    echo "括弧"
-
-  echo msg["wordWrap"]
-  let wrapWord = readLineFromStdin(promptStr)
-
-  echo msg["width"]
-  let width = readLineFromStdin(promptStr)
-
-  echo ""
   echo msg["confirmConfig"]
   let tw2 = "*".repeat(terminalWidth())
-  lineMsg("projDir = " & projDir, tw2)
+  lineMsg tw2:
+    echo "Project directory = " & conf.projectDir
+    echo "Use join = " & $conf.useJoin
+    echo "Wrap width = " & $conf.wrapWidth
 
-  echo msg["finalConfirm"]
-  let yes = readLineFromStdin(promptStr)
-  if yes.toLower == "y":
-    discard
+  if inputPrompt(msg["finalConfirm"]).toLower == "y":
+    echo "Finish"
   else:
     echo "中断"
 
