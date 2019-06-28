@@ -7,10 +7,6 @@ suite "proc readMapInfos":
   test "Normal":
     echo readMapInfos("examples/MapInfos.json")
 
-suite "proc getBiggestMapIndex":
-  test "Normal":
-    echo getBiggestMapIndex("examples")
-
 suite "proc newMapObject":
   setup:
     var ss = Sentences(@[Sentence(actorName: "test", text: "123456")])

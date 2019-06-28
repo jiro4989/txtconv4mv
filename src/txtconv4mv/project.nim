@@ -148,12 +148,8 @@ proc newMapObj: JsonNode =
   }
 
 proc readMapInfos*(f: string): MapInfos =
+  ## MapInfos.jsonを読み取ってオブジェクトとして返す。
   parseFile(f).to(MapInfos)
-
-proc getBiggestMapIndex*(dir: string): int =
-  for f in walkFiles(dir / "Map*.json"):
-    if f.lastPathPart != "MapInfos.json":
-      inc(result)
 
 template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
   result = newJObject()
