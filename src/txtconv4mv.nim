@@ -103,8 +103,18 @@ proc main(params: seq[string]) =
   var p = newParser(appName):
     command("config"):
       option("-l", "--lang", default="ja", help="Message language")
+      flag("-I", "--no-interactive", help="No interactive mode")
       run:
-        cmdConfig(opts)
+        if opts.noInteractive:
+          let data = GenerateConfig(
+            projectDir: """C:\Users\YourName\Documents\Game\Project1""",
+            actorNameBrackets: ["【", "】"],
+            wrapWidth: 72,
+            useJoin: true,
+            textBrackets: ["「", "」"])
+          writeFile("config.json", data[].`$$`.parseJson.pretty)
+        else:
+          cmdConfig(opts)
     command("generate"):
       option("-f", "--config-file", default="config.json", help="Config file")
       arg("args", nargs = -1)
