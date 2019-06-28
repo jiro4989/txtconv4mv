@@ -18,45 +18,69 @@ type
 const
   appName = "txtconv4mv"
   version = "v1.0.0"
+  defaultWrapWidth = 55
 
 template cmdConfigInit(opts: untyped) =
   debug "Start cmdConfigInit"
-  const promptStr = "? "
-  let tw = "-".repeat(terminalWidth())
-  template lineMsg(line: string, body: untyped) =
-    echo line
-    echo ""
-    body
-    echo ""
-    echo line
+
+  template lineMsg(ch: string, body: untyped) =
+    block:
+      let line = ch.repeat(terminalWidth())
+      echo line
+      echo ""
+      body
+      echo ""
+      echo line
   
   proc inputPrompt(msg: string): string =
     echo msg
-    discard readLineFromStdin(promptStr, result)
+    discard readLineFromStdin("? ", result)
     echo ""
 
   let msg = message[opts.lang]
-  lineMsg tw:
+  lineMsg "-":
     echo msg["start"]
 
   var conf = new GenerateConfig
+  # プロジェクトのディレクトリパス
   conf.projectDir = inputPrompt(msg["projectDir"])
-  if inputPrompt(msg["wrapWithBrackets"]).toLower == "y":
-    echo "括弧 TODO"
-  conf.useJoin = inputPrompt(msg["wordWrap"]).toLower == "y"
-  conf.wrapWidth = inputPrompt(msg["width"]).parseInt
+  # アクター名の括弧
+  if inputPrompt(msg["wrapActorWithBrackets"]).toLower == "y":
+    conf.actorNameBrackets[0] = inputPrompt(msg["startBracket"])
+    conf.actorNameBrackets[1] = inputPrompt(msg["endBracket"])
+  # テキストの括弧
+  if inputPrompt(msg["wrapTextWithBrackets"]).toLower == "y":
+    conf.textBrackets[0] = inputPrompt(msg["startBracket"])
+    conf.textBrackets[1] = inputPrompt(msg["endBracket"])
+  # 折り返すか
+  conf.wrapWidth =
+    if inputPrompt(msg["wrapWord"]).toLower == "y":
+      # TODO デフォルト値
+      inputPrompt(msg["width"]).parseInt
+    else:
+      0
+  # 次の行と結合するか
+  conf.useJoin = inputPrompt(msg["useJoin"]).toLower == "y"
 
   echo msg["confirmConfig"]
-  let tw2 = "*".repeat(terminalWidth())
-  lineMsg tw2:
-    echo "Project directory = " & conf.projectDir
-    echo "Use join = " & $conf.useJoin
-    echo "Wrap width = " & $conf.wrapWidth
+  echo ""
+  const pad = "    "
+  echo pad & "Project directory = " & conf.projectDir
+  echo pad & "Actor brackets = " & $conf.actorNameBrackets
+  echo pad & "Text brackets = " & $conf.textBrackets
+  echo pad & "Wrap width = " & $conf.wrapWidth
+  echo pad & "Use join = " & $conf.useJoin
+  echo ""
 
   if inputPrompt(msg["finalConfirm"]).toLower == "y":
-    echo "Finish"
+    writeFile(opts.outFile, conf[].`$$`.parseJson.pretty)
+    echo pad & "Generated => " & opts.outFile
+    echo ""
+    lineMsg "-":
+      echo msg["complete"]
   else:
-    echo "中断"
+    lineMsg "-":
+      echo msg["interruption"]
 
 template cmdConfigUpdate(opts: untyped) =
   debug "Start cmdConfigInit"
@@ -68,7 +92,7 @@ template cmdConfig(opts: untyped) =
     let data = GenerateConfig(
       projectDir: """C:\Users\YourName\Documents\Game\Project1""",
       actorNameBrackets: ["【", "】"],
-      wrapWidth: 72,
+      wrapWidth: defaultWrapWidth,
       useJoin: true,
       textBrackets: ["「", "」"])
     writeFile("config.json", data[].`$$`.parseJson.pretty)
@@ -125,6 +149,7 @@ proc main(params: seq[string]) =
       option("-l", "--lang", default="ja", help="Message language")
       flag("-I", "--no-interactive", help="No interactive mode")
       arg("cmd", help="init or update")
+      option("-o", "--out-file", default="config.json", help="Output file path")
       run:
         setLogger(opts.debug)
         cmdConfig(opts)
