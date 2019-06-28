@@ -115,27 +115,30 @@ template cmdGenerate(opts: untyped) =
                      .join(",\n")
   writeFile(mapInfosPath, "[\n" & data & "\n]")
 
+proc setLogger(use: bool) =
+  if use:
+    newConsoleLogger(lvlAll, verboseFmtStr).addHandler()
+
 proc main(params: seq[string]) =
   var p = newParser(appName):
-    option("-o", "--output", help="Output to this file")
     command("config"):
       flag("-X", "--debug", help="Debug on")
-      flag("-v", "--version", help="Print version info")
       option("-l", "--lang", default="ja", help="Message language")
       flag("-I", "--no-interactive", help="No interactive mode")
-      arg("cmd") # TODO これのせい
+      arg("cmd", help="init or update")
       run:
-        if opts.version:
-          echo version
-          return
-        if opts.debug:
-          newConsoleLogger(lvlAll, verboseFmtStr).addHandler()
+        setLogger(opts.debug)
         cmdConfig(opts)
     command("generate"):
+      flag("-X", "--debug", help="Debug on")
       option("-f", "--config-file", default="config.json", help="Config file")
       arg("args", nargs = -1)
       run:
+        setLogger(opts.debug)
         cmdGenerate(opts)
+    command("version"):
+      run:
+        echo version
   
   var opts = p.parse(params)
   p.run(params)

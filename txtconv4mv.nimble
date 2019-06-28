@@ -21,4 +21,4 @@ task ci, "Run CI":
   exec "nimble build -Y"
   let appName = bin[0]
   exec &"./bin/{appName} -h"
-  exec &"./bin/{appName} -v"
+  exec &"./bin/{appName} version"
