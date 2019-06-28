@@ -17,7 +17,7 @@ type
 
 const
   appName = "txtconv4mv"
-  version = "v1.0.0"
+  version = "v0.1.0"
   defaultWrapWidth = 55
 
 template cmdConfigInit(opts: untyped) =
@@ -84,7 +84,7 @@ template cmdConfigInit(opts: untyped) =
 
 template cmdConfigUpdate(opts: untyped) =
   debug "Start cmdConfigInit"
-  discard
+  echo "未実装"
 
 template cmdConfig(opts: untyped) =
   debug "Start cmdConfig"
