@@ -73,10 +73,6 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
   #     code:401 message (1line)
   #     code:401 message (1line)
   #     code:0 (eventの最後)
-  if sentence.actorName != "":
-    let actor = actorNameBrackets[0] & sentence.actorName & actorNameBrackets[1]
-    result.add(actor)
-
   # テキスト全体を括弧でくくるときは、先頭の括弧の高さに全てのテキストを合わせる
   # よって、追加するインデント分折り返しの長さを引いてからwrapする
   let indentWidth = textBrackets[0].stringWidth
@@ -95,3 +91,14 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
       wraped[^1] = w[0]
       wraped.add(genI(indentWidth) & w[1])
   result.add(wraped)
+
+  if sentence.actorName != "":
+    let
+      actor = actorNameBrackets[0] & sentence.actorName & actorNameBrackets[1]
+      m = 3
+      n = (result.len / m).int
+      maxlen = result.len
+    for i in countdown(n, 0):
+      let x = i * m
+      if x != maxlen:
+        result.insert(actor, x)

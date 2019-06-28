@@ -72,7 +72,12 @@ suite "proc format":
     check Sentence(actorName: "Test", text: "1234567\nabcdef")
           .format(["[", "]"], 6, true, ["<", ">"]) == @["[Test]", "<12345", " 67abc", " def>"]
     check Sentence(actorName: "Test", text: "1234567\nabcdef")
-          .format(["[", "]"], 6, true, ["「", "」"]) == @["[Test]", "「1234", "  567a", "  bcde", "  f」"]
+          .format(["[", "]"], 6, true, ["「", "」"]) == @["[Test]", "「1234", "  567a", "  bcde", "[Test]", "  f」"]
   test "Actor, actorBrackets, wrap, useJoin, textBrackets, lastWrap":
     check Sentence(actorName: "Test", text: "1234567\nabcde")
-          .format(["[", "]"], 6, true, ["「", "」"]) == @["[Test]", "「1234", "  567a", "  bcde", "  」"]
+          .format(["[", "]"], 6, true, ["「", "」"]) == @["[Test]", "「1234", "  567a", "  bcde", "[Test]", "  」"]
+  test "No actor":
+    check Sentence(actorName: "", text: "1234567\nabcde")
+          .format(["[", "]"], 6, true, ["「", "」"]) == @["「1234", "  567a", "  bcde", "  」"]
+    check Sentence(actorName: "", text: "1234567\nabcde\nABCD")
+          .format(["[", "]"], 6, true, ["「", "」"]) == @["「1234", "  567a", "  bcde", "  ABCD", "  」"]
