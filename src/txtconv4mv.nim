@@ -69,11 +69,10 @@ template cmdConfig(opts: untyped) =
 template cmdGenerate(opts: untyped) =
   debug "Start cmdGenerate"
 
-  proc createMapFilePath(dir: string): string =
+  proc createMapFilePath(dir: string, index: int): string =
     # MapXXX.jsonのファイルパスを生成
     # 一番大きい数値を取得し、1加算する
     let
-      index = getBiggestMapIndex(dir) + 1
       n = align($index, 3, '0')
       mapFile = dir / "Map" & n & ".json"
     return mapFile
@@ -92,7 +91,7 @@ template cmdGenerate(opts: untyped) =
       # MapXXX.jsonのデータを生成
       obj = newMapObject(ss, config.actorNameBrackets, config.wrapWidth,
                          config.useJoin, config.textBrackets)
-      mapFilePath = createMapFilePath(dataDir)
+      mapFilePath = createMapFilePath(dataDir, mapInfos.getAddableId)
     writeFile(mapFilePath, obj.pretty)
 
     # MapInfos.jsonを更新する
