@@ -14,8 +14,22 @@ suite "proc newMapObject":
   test "Normal":
     echo newMapObject(Sentences(@[Sentence(actorName: "test", text: "123456")]), ["<<", ">>"], 4, true, ["「"," 」"]).pretty
 
+proc mi(id: int): MapInfo = MapInfo(id: id, order: id, name: "txtconv4mv")
+
+suite "proc getAddableId":
+  setup:
+    var infos: MapInfos
+    var n: MapInfo
+    infos.add(n)
+    infos.add(mi(1))
+    infos.add(mi(2))
+  test "Get last id":
+    check infos.getAddableId == 3
+  test "Get 1":
+    infos[1] = nil
+    check infos.getAddableId == 1
+
 suite "proc addMapInfo":
-  proc mi(id: int): MapInfo = MapInfo(id: id, order: id, name: "txtconv4mv")
   setup:
     var infos: MapInfos
     var n: MapInfo

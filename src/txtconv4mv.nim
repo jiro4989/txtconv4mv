@@ -3,7 +3,7 @@ import argparse
 import txtconv4mv/[sentence, project, msgs]
 
 import json, os, logging, rdstdin, tables, terminal
-from strutils import toLower, repeat, align
+from strutils import toLower, repeat, align, join
 from sequtils import mapIt, filterIt
 from marshal import `$$`
 
@@ -97,7 +97,10 @@ template cmdGenerate(opts: untyped) =
 
     # MapInfos.jsonを更新する
     mapInfos.addMapInfo
-  writeFile(mapInfosPath, mapInfos.mapIt(it[]).`$$`.parseJson.pretty)
+  let data = mapInfos.mapIt(if it.isNil: "null"
+                            else: $$it[])
+                     .join(",\n")
+  writeFile(mapInfosPath, "[\n" & data & "\n]")
 
 proc main(params: seq[string]) =
   var p = newParser(appName):

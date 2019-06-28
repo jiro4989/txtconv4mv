@@ -207,24 +207,25 @@ proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
   result = newMapObj()
   result["events"][1]["pages"][0]["list"] = list
 
+proc getAddableId*(self: MapInfos): int =
+  if 1 < self.filterIt(it.isNil).len:
+    for i, elem in self:
+      if elem.isNil and 0 < i:
+        return i
+  return self.len
+
 proc addMapInfo*(self: var MapInfos) =
   let order = self.filterIt(not it.isNil).mapIt(it.order).max + 1
-  var mi = MapInfo(id: -1, expanded: false, name: "txtconv4mv", order: order,
+  let id = getAddableId(self)
+  var mi = MapInfo(id: id, expanded: false, name: "txtconv4mv", order: order,
                     parentId: 0, scrollX: 0.0, scrollY: 0.0)
   # 先頭のは常にnullなので
   if 1 < self.filterIt(it.isNil).len:
     # 途中にnullが存在したらその位置を上書きする
-    # idはnullの位置と同じ
-    for i, elem in self:
-      if elem.isNil and 0 < i:
-        mi.id = i
-        self[mi.id] = mi
-        return
-  # 途中にnullが存在しないときは末尾に追加
-  # idは一番大きいIDの次の値
-  let id = self.filterIt(not it.isNil).mapIt(it.id).max + 1
-  mi.id = id
-  self.add(mi)
+    self[id] = mi
+  else:
+    # 途中にnullが存在しないときは末尾に追加
+    self.add(mi)
 
 proc `$`*(self: MapInfo): string = $self[]
   
