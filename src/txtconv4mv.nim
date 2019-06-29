@@ -170,4 +170,8 @@ proc main(params: seq[string]) =
   p.run(params)
 
 when isMainModule:
-  main(commandLineParams())
+  try:
+    main(commandLineParams())
+  except:
+    stderr.writeLine(getCurrentExceptionMsg())
+    quit(1)
