@@ -161,7 +161,7 @@ template newEventTmpl(code: int, indent: int, paramsBody: untyped): untyped =
   paramsBody
   result.add("parameters", parameters)
 
-proc newSentenceEventMetaPrefix(): JsonNode =
+proc newSentenceEventMetaPrefix(s: Sentence): JsonNode =
   ## 文章の開始を示すメタデータを生成する。
   # {
   #   "code": 101,
@@ -170,10 +170,10 @@ proc newSentenceEventMetaPrefix(): JsonNode =
   # }
   newEventTmpl 101, 0:
     var parameters = newJArray()
-    parameters.add(newJString(""))
-    parameters.add(newJInt(0)) # TODO
-    parameters.add(newJInt(0)) # TODO
-    parameters.add(newJInt(2)) # TODO
+    parameters.add(newJString(s.image))
+    parameters.add(newJInt(s.imageIndex))
+    parameters.add(newJInt(s.background))
+    parameters.add(newJInt(s.position))
 
 proc newSentenceEventBody(line: string): JsonNode =
   ## 文章のデータを生成する。
@@ -205,7 +205,7 @@ proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
     let texts = sentence.format(actorNameBrackets, wrapWidth, useJoin, textBrackets)
     for i, line in texts:
       if i mod 4 == 0:
-        list.add(newSentenceEventMetaPrefix())
+        list.add(newSentenceEventMetaPrefix(sentence))
       list.add(newSentenceEventBody(line))
   list.add(newSentenceEventMetaSuffix())
   result = newMapObj()

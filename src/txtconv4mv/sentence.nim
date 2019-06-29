@@ -6,8 +6,27 @@ from sequtils import mapIt
 type
   Sentence* = ref SentenceObj
   SentenceObj* = object
-    image*, actorName*, text*, background*, position*: string
+    image*, actorName*, text*: string
+    imageIndex*, background*, position*: int
   Sentences* = seq[Sentence]
+  ConvertionWinBgError* = object of Defect
+  ConvertionWinPosError* = object of Defect
+
+proc winBgToCode(s: string): int =
+  case s
+  of "ウィンドウ": 0
+  of "暗くする": 1
+  of "透明": 2
+  else: raise newException(ConvertionWinBgError,
+                           "ウィンドウが不正です。 入力=" & s)
+
+proc winPosToCode(s: string): int =
+  case s
+  of "上": 0
+  of "中": 1
+  of "下": 2
+  else: raise newException(ConvertionWinPosError,
+                           "ウィンドウ位置が不正です。 入力=" & s)
 
 proc readSentenceFile*(fn: string): Sentences =
   ## 文章を書いたCSVファイルを読み取る。
@@ -16,12 +35,13 @@ proc readSentenceFile*(fn: string): Sentences =
   parser.readHeaderRow()
   while parser.readRow():
     let r = parser.row
-    var sentence = new Sentence
-    sentence.image = r[0]
-    sentence.actorName = r[1]
-    sentence.text = r[2]
-    sentence.background = r[3]
-    sentence.position = r[4]
+    let sentence = Sentence(
+      image: r[0],
+      imageIndex: r[1].parseInt,
+      actorName: r[2],
+      text: r[3],
+      background: r[4].winBgToCode,
+      position: r[5].winPosToCode)
     result.add(sentence)
 
 proc wrapEAW1Line(s: string, width: int): seq[string] =
@@ -80,16 +100,16 @@ proc format*(sentence: Sentence, actorNameBrackets: array[2, string],
 
   # 括弧によるインデント追加
   if 0 < indentWidth:
-    proc genI(w: int): string = " ".repeat(w)
+    proc makeIndent(w: int): string = " ".repeat(w)
     # 先頭に括弧を追加し、先頭以外の行の行頭にインデントを追加
-    wraped = (textBrackets[0] & wraped[0]) & wraped[1..^1].mapIt(genI(indentWidth) & it)
+    wraped = (textBrackets[0] & wraped[0]) & wraped[1..^1].mapIt(makeIndent(indentWidth) & it)
     # 最後の行の行末に括弧とじを追加
     wraped[^1].add(textBrackets[1])
     # 括弧とじを追加したことで折り返し幅を超えているときのための修正
     if wrapWidth < wraped[^1].stringWidth:
       let w = wraped[^1].wrapEAW1Line(wrapWidth)
       wraped[^1] = w[0]
-      wraped.add(genI(indentWidth) & w[1])
+      wraped.add(makeIndent(indentWidth) & w[1])
   result.add(wraped)
 
   # アクター名を4行おきに挟む
