@@ -207,7 +207,7 @@ proc newMapObject*(sentences: Sentences, actorNameBrackets: array[2, string],
       if i mod 4 == 0:
         list.add(newSentenceEventMetaPrefix())
       list.add(newSentenceEventBody(line))
-    list.add(newSentenceEventMetaSuffix())
+  list.add(newSentenceEventMetaSuffix())
   result = newMapObj()
   result["events"][1]["pages"][0]["list"] = list
 

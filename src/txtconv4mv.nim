@@ -17,7 +17,7 @@ type
 
 const
   appName = "txtconv4mv"
-  version = "v0.1.0"
+  version = "v0.1.1"
   defaultWrapWidth = 55
 
 template cmdConfigInit(opts: untyped) =
